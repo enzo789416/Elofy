@@ -91,9 +91,18 @@ class PeopleController extends Controller
      * @param  \App\People  $people
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, People $people)
+    public function update(Request $request, People $person)
     {
-        //
+        $people = People::find($person);
+
+        $people->name = $request->input('nameEdit');
+        $people->height = $request->input('heightEdit');
+        $people->lactose = $request->input('lactoseEdit');
+        $people->weight = $request->input('weightEdit');
+        $people->athlete = $request->input('athleteEdit');
+
+        $people->save();
+
     }
 
     /**
