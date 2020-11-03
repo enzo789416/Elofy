@@ -104,11 +104,9 @@ class PeopleController extends Controller
      */
     public function destroy(People $person)
     {
-        $people = request()->get('person');
-
-        echo request ()->get('person');
-        die();
-        // $people->delete();
+        $people = People::find($person);
+        dd($people);
+        exit;
 
         return response()->json(['success'=>'People Deleted successfully']);
     }

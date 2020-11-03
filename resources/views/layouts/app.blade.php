@@ -123,7 +123,7 @@
                 "<'row'<'col-sm-4'i><'col-sm-4 text-center'l><'col-sm-4'p>>",
             "buttons": [
                     {
-                        text: 'Cadastrar Pessoa',
+                        text: 'Create People',
                         action: function ( e, dt, node, config ) {
                             //window.location.href = "{{ route('manage.people.create')}}"
                             addPeople()
@@ -149,7 +149,8 @@
                         'checkboxes': {
                             'selectRow': true
                         }
-                    }
+                    },
+
                 ],
                 'select': {
                     'style': 'multi'
@@ -196,110 +197,7 @@
 
             }
 
-            function addPeople(){
-                $("#people").val('');
-                $('#people-modal').modal('show');
-            }
 
-            function editPeople(event) {
-                debugger
-                var id  = $(event).data("id");
-                let _url = `manage/people/${id}/edit`;
-                $("#people_id").text('');
-                $("#name").text('');
-                $("#height").text('');
-                $("#lactose").text('');
-                $("#weight").text('');
-                $("#athlete").text('');
-                $('#people-modal').text('');
-
-                $.ajax({
-                url: _url,
-                type: "GET",
-                    success: function(response) {
-                        if(response) {
-                            $("#people_id").val(response.id);
-                            $("#name").val(response.name);
-                            $("#height").val(response.height);
-                            $("#lactose").val(response.lactose);
-                            $("#weight").val(response.weight);
-                            $("#athlete").val(response.athlete);
-                            $('#people-modal').modal('show');
-                        }
-                    }
-                });
-            }
-
-            function createPeople() {
-                var name = $('#name').val();
-                var height = $('#height').val();
-                var lactose = $('#lactose').val();
-                var weight = $('#weight').val();
-                var athlete = $('#athlete').val();
-                var id = $('#people_id').val();
-
-                let _url     = `manage/people`;
-                let _token   = $('meta[name="csrf-token"]').attr('content');
-
-                $.ajax({
-                    url: _url,
-                    type: "POST",
-                    data: {
-                    id: id,
-                    name: name,
-                    height: height,
-                    lactose: lactose,
-                    weight: weight,
-                    athlete: athlete,
-                    _token: _token
-                    },
-                    success: function(response) {
-                        if(response.code == 200) {
-                        if(id != ""){
-                            $("#row_"+id+" td:nth-child(2)").html(response.data.name);
-                            $("#row_"+id+" td:nth-child(3)").html(response.data.height);
-                            $("#row_"+id+" td:nth-child(3)").html(response.data.lactose);
-                            $("#row_"+id+" td:nth-child(3)").html(response.data.weight);
-                            $("#row_"+id+" td:nth-child(3)").html(response.data.athlete);
-                        } else {
-                            $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.height+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editPeople(event.target)" class="btn btn-info">Edit</a></td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deletePeople(event.target)">Delete</a></td></tr>');
-                        }
-                        $("#name").text('');
-                        $("#height").text('');
-                        $("#lactose").text('');
-                        $("#weight").text('');
-                        $("#athlete").text('');
-
-                        $('#people-modal').modal('hide');
-                        }
-                    },
-                    error: function(response) {
-                    $('#nameError').text(response.responseJSON.errors.name);
-                    $('#heightError').text(response.responseJSON.errors.height);
-                    $('#lactoseError').text(response.responseJSON.errors.lactose);
-                    $('#weightError').text(response.responseJSON.errors.weight);
-                    $('#athleteError').text(response.responseJSON.errors.athlete);
-                    }
-                });
-            }
-
-            function deletePeople(event) {
-                debugger
-                var id  = $(event).data("id");
-                let _url =  `/manage/people/${id}`;
-                let _token   = $('meta[name="csrf-token"]').attr('content');
-
-                $.ajax({
-                    url: _url,
-                    type: 'DELETE',
-                    data: {
-                    _token: _token
-                    },
-                    success: function(response) {
-                    $("#row_"+id).remove();
-                    }
-                });
-            }
 
 
 

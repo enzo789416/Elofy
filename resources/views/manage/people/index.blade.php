@@ -4,7 +4,7 @@
 
     <ul class="list-group">
         <li class="list-group-item">
-            <h4 class="text-center">Lista de Pessoas</h3>
+            <h4 class="text-center">List of People</h3>
         </li>
     </ul>
 
@@ -23,50 +23,44 @@
                 </div> --}}
                 <div class="" id="">
                     <div class="col-4">
-                        <input onchange="filterme()" type="checkbox" name="lact" value="Sim">&nbsp;&nbsp;Pessoas intolerantes a lactose
+                        <input onchange="filterme()" type="checkbox" name="lact" value="Yes">&nbsp;&nbsp;Pessoas intolerantes a lactose
                     </div>
                     <div class="col-6">
-                        <input onchange="filteratl()" type="checkbox" name="atleta" value="Sim">&nbsp;&nbsp;Pessoas atletas
+                        <input onchange="filteratl()" type="checkbox" name="atleta" value="Yes">&nbsp;&nbsp;Pessoas atletas
                     </div>
                   </div>
 
                     <table id="example" class="table table-bordered table-striped display" cellspacing="0" style="width:100%">
                         <thead>
-                            <tr>
+                            <tr class="text-center">
 
                                 <th></th>
-                                <th>Nome</th>
-                                <th>Altura</th>
-                                <th>Peso</th>
-                                <th>Intolerante a lactose</th>
-                                <th>Atleta</th>
-                                <th>visualizar</th>
-                                <th>Editar</th>
-                                <th>Deletar</th>
+                                <th>name</th>
+                                <th>height</th>
+                                <th>weight</th>
+                                <th>Lactose intolerant</th>
+                                <th>athlete</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($peoples ?? '' as $people)
-                                <tr id="row_{{$people->id}}">
+                                <tr class="text-center" id="row_{{$people->id}}">
                                     <td></td>
-                                    <td>{{ $people->name }}</td>
+                                    <td >{{ $people->name }}</td>
                                     <td>{{ $people->height }}</td>
                                     <td>{{ $people->weight }}</td>
-                                    <td>{{ $people->lactose ? 'Sim' : 'Não' }}</td>
-                                    <td>{{ $people->athlete ? 'Sim' : 'Não' }}</td>
-                                    <td><a href="javascript:void(0)" class="btn btn-info d-flex justify-content-center" data-id="{{ $people->id }}"
-                                        onclick="viewPeople(event.target)" role="button">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </td>
-                                    <td><a href="javascript:void(0)" class="btn btn-warning d-flex justify-content-center" data-id="{{ $people->id }}"
-                                        onclick="editPeople(event.target)" role="button">
+                                    <td>{{ $people->lactose ? 'Yes' : 'No' }}</td>
+                                    <td>{{ $people->athlete ? 'Yes' : 'No' }}</td>
+                                    <td class=""><a href="" class="btn btn-warning editPeople " data-id="{{ $people->id }}"
+                                         role="button">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="javascript:void(0)" class="btn btn-danger d-flex justify-content-center" data-id="{{ $people->id }}"
-                                            onclick="deletePeople(event.target)" role="button">
+                                        <a href="javascript:void(0)" class="btn btn-danger" data-id="{{ $people->id }}"
+                                            onclick="deletePeople()" role="button">
                                                 <i class="fa fa-trash"></i>
                                             </a>
                                     </td>
@@ -78,12 +72,12 @@
             </div>
         </div>
     </div>
-
+<!-- ADD People Model -->
     <div class="modal fade" id="people-modal" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header">
-                  <h4 class="modal-title"></h4>
+                  <h4 class="modal-title">Create People</h4>
               </div>
               <div class="modal-body">
                   <form name="peopleForm" class="form-horizontal">
@@ -105,7 +99,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="lactose" class="col-sm-6">lactose (0 - Não // 1 - Sim)</label>
+                        <label for="lactose" class="col-sm-6">lactose (0 - No // 1 - Yes)</label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control" id="lactose" name="lactose" placeholder="Enter lactose">
                             <span id="lactoseError" class="alert-message"></span>
@@ -121,7 +115,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="athlete" class="col-sm-6">athlete (0 - Não // 1 - Sim)</label>
+                        <label for="athlete" class="col-sm-6">athlete (0 - No // 1 - Yes)</label>
                         <div class="col-sm-12">
                             <input type="number" class="form-control" id="athlete" name="athlete" placeholder="Enter athlete">
                             <span id="athleteError" class="alert-message"></span>
@@ -130,9 +124,208 @@
                   </form>
               </div>
               <div class="modal-footer">
-                  <button type="button" class="btn btn-primary" onclick="createPeople()">Salvar</button>
+                  <button type="button" class="btn btn-danger float-left" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary float-right" onclick="createPeople()">Save</button>
+              </div>
+          </div>
+        </div>
+      </div>
+
+<!-- Edit People Model -->
+
+      <div class="modal fade" id="peopleEditModal" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">Edit People</h4>
+              </div>
+              <div class="modal-body">
+                  <form name="peopleEditForm" class="form-horizontal">
+                      {{ csrf_field() }}
+                      {{ method_field('PUT') }}
+                     <input type="hidden" name="people_id" id="people_id">
+                      <div class="form-group">
+                          <label for="name" class="col-sm-2">Name</label>
+                          <div class="col-sm-12">
+                              <input type="text" class="form-control" id="name" name="nameEdit" placeholder="Enter Name">
+                              <span id="nameError" class="alert-message"></span>
+                          </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="height" class="col-sm-2">height</label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="height" name="heightEdit" placeholder="Enter height">
+                            <span id="heightError" class="alert-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lactose" class="col-sm-6">lactose (0 - Não // 1 - Sim)</label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="lactose" name="lactoseEdit" placeholder="Enter lactose">
+                            <span id="lactoseError" class="alert-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weight" class="col-sm-2">weight</label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="weight" name="weightEdit" placeholder="Enter weight">
+                            <span id="weightError" class="alert-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="athlete" class="col-sm-6">athlete (0 - Não // 1 - Sim)</label>
+                        <div class="col-sm-12">
+                            <input type="number" class="form-control" id="athlete" name="athleteEdit" placeholder="Enter athlete">
+                            <span id="athleteError" class="alert-message"></span>
+                        </div>
+                    </div>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-danger float-left" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary float-right" onclick="createPeople()">Update</button>
               </div>
           </div>
         </div>
       </div>
 @endsection
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.3/umd/popper.min.js" integrity="sha512-53CQcu9ciJDlqhK7UD8dZZ+TF2PFGZrOngEYM/8qucuQba+a+BXOIRsp9PoMNJI3ZeLMVNIxIfZLbG/CdHI5PA==" crossorigin="anonymous"></script>
+<script type="text/javascript">
+            function addPeople(){
+                $("#people").val('');
+                $('#people-modal').modal('show');
+            }
+
+            $(document).ready(function(){
+                $('.editPeople').on('click',function(){
+                    $('#peopleEditModal').modal('show');
+                    $tr = $(this).closest('tr');
+                    debugger
+                    var data = $tr.children("td").map(function(){
+                        return $(this).text()
+                    })
+                    var data4 = 0
+                    if (data[4] == "Yes") {
+                        data4 = 1
+                    }
+
+                    var data5 = 0
+                    if (data[5] == "Yes") {
+                        data5 = 1
+                    }
+                    $("#nameEdit").val(data[1]);
+                    $("#heightEdit").val(data[2]);
+                    $("#lactoseEdit").val(data[3]);
+                    $("#weightEdit").val(data4);
+                    $("#athleteEdit").val(data5);
+                })
+            })
+
+            function editPeople() {
+                debugger
+
+
+                // var id  = $(event).data("id");
+                // let _url = `/manage/people/${id}/edit`;
+                // $("#people_id").text('');
+                // $("#name").text('');
+                // $("#height").text('');
+                // $("#lactose").text('');
+                // $("#weight").text('');
+                // $("#athlete").text('');
+                // $('#people-modal').text('');
+
+                // $.ajax({
+                // url: _url,
+                // type: "GET",
+                //     success: function(response) {
+                //         if(response) {
+                //             $("#people_id").val(response.id);
+                //             $("#name").val(response.name);
+                //             $("#height").val(response.height);
+                //             $("#lactose").val(response.lactose);
+                //             $("#weight").val(response.weight);
+                //             $("#athlete").val(response.athlete);
+                //             $('#people-modal').modal('show');
+                //         }
+                //     }
+                // });
+            }
+
+            function createPeople() {
+                var name = $('#name').val();
+                var height = $('#height').val();
+                var lactose = $('#lactose').val();
+                var weight = $('#weight').val();
+                var athlete = $('#athlete').val();
+                var id = $('#people_id').val();
+
+                let _url     = `/manage/people`;
+                let _token   = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    url: _url,
+                    type: "POST",
+                    data: {
+                    id: id,
+                    name: name,
+                    height: height,
+                    lactose: lactose,
+                    weight: weight,
+                    athlete: athlete,
+                    _token: _token
+                    },
+                    success: function(response) {
+                        if(response.code == 200) {
+                        if(id != ""){
+                            $("#row_"+id+" td:nth-child(2)").html(response.data.name);
+                            $("#row_"+id+" td:nth-child(3)").html(response.data.height);
+                            $("#row_"+id+" td:nth-child(3)").html(response.data.lactose);
+                            $("#row_"+id+" td:nth-child(3)").html(response.data.weight);
+                            $("#row_"+id+" td:nth-child(3)").html(response.data.athlete);
+                        } else {
+                            $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.height+'</td><td>'+response.data.lactose+'</td><td>'+response.data.weight+'</td><td>'+response.data.athlete+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editPeople(event.target)" class="btn btn-warning d-flex justify-content-center"><i class="fas fa-edit"></i></a></td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger d-flex justify-content-center" onclick="deletePeople(event.target)"><i class="fa fa-trash"></i></a></td></tr>');
+                        }
+                        $("#name").text('');
+                        $("#height").text('');
+                        $("#lactose").text('');
+                        $("#weight").text('');
+                        $("#athlete").text('');
+
+                        $('#people-modal').modal('hide');
+                        }
+                    },
+                    error: function(response) {
+                    $('#nameError').text(response.responseJSON.errors.name);
+                    $('#heightError').text(response.responseJSON.errors.height);
+                    $('#lactoseError').text(response.responseJSON.errors.lactose);
+                    $('#weightError').text(response.responseJSON.errors.weight);
+                    $('#athleteError').text(response.responseJSON.errors.athlete);
+                    }
+                });
+            }
+
+            function deletePeople(event) {
+                debugger
+                var id  = $(event).data("id");
+                let _url =  `/manage/people/${id}`;
+                let _token   = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    url: _url,
+                    type: 'DELETE',
+                    data: {
+                    _token: _token
+                    },
+                    success: function(response) {
+                    $("#row_"+id).remove();
+                    }
+                });
+            }
+</script>
