@@ -13,14 +13,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+// Route::get('/admin', function () {
+//     return view('admin');
+// });
+
+Route::view('/', 'welcome');
+
+Route::view('/admin', 'admin');
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::prefix('admin')->name('admin.')->middleware('can:manage-peoples')->group(function(){
+Route::prefix('manage')->name('manage.')->group(function(){
     Route::resource('/people', 'PeopleController');
 });

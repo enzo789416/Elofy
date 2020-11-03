@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class PeopleController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +19,8 @@ class PeopleController extends Controller
      */
     public function index()
     {
-        //
+        $peoples = People::all();
+        return view('manage.people.index')->with('peoples',$peoples);
     }
 
     /**
@@ -33,9 +39,25 @@ class PeopleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $person)
     {
-        //
+        $person->validate([
+            'name'       => 'required|max:255',
+            'height' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'lactose' => 'required|boolean',
+            'weight' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'athlete' => 'required|boolean',
+          ]);
+
+          $people = People::updateOrCreate(['id' => $person->id], [
+                    'name' => $person->name,
+                    'height' => $person->height,
+                    'lactose' => $person->lactose,
+                    'weight' => $person->weight,
+                    'athlete' => $person->athlete
+                  ]);
+
+          return response()->json(['code'=>200, 'message'=>'People Created successfully','data' => $people], 200);
     }
 
     /**
@@ -44,9 +66,11 @@ class PeopleController extends Controller
      * @param  \App\People  $people
      * @return \Illuminate\Http\Response
      */
-    public function show(People $people)
+    public function show(People $person)
     {
-        //
+        $people = People::find($person);
+
+        return response()->json($people);
     }
 
     /**
@@ -78,8 +102,14 @@ class PeopleController extends Controller
      * @param  \App\People  $people
      * @return \Illuminate\Http\Response
      */
-    public function destroy(People $people)
+    public function destroy(People $person)
     {
-        //
+        $people = request()->get('person');
+
+        echo request ()->get('person');
+        die();
+        // $people->delete();
+
+        return response()->json(['success'=>'People Deleted successfully']);
     }
 }
